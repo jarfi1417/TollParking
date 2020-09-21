@@ -1,0 +1,12 @@
+com.tollparkingapi.tollparking
+com.tollparkingapi.tollparking.config
+com.tollparkingapi.tollparking.controller
+com.tollparkingapi.tollparking.controller.it
+com.tollparkingapi.tollparking.entity
+com.tollparkingapi.tollparking.entity.pricingpolicy
+com.tollparkingapi.tollparking.exception
+com.tollparkingapi.tollparking.form
+com.tollparkingapi.tollparking.mapper
+com.tollparkingapi.tollparking.resource
+com.tollparkingapi.tollparking.service
+com.tollparkingapi.tollparking.service.impl

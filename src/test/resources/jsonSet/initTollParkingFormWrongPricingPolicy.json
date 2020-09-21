@@ -1,0 +1,7 @@
+{
+	"nbStandardParkingSlots" : 2,
+	"nb20KWElectricParkingSlots" : 3,
+	"nb50KWElectricParkingSlots" : 5,
+	"pricingPolicyType" : "WRONG_PRICING_POLICY",
+	"pricePerHour" : "2.5"
+}
