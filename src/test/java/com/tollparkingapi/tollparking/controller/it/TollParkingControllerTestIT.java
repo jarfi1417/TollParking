@@ -5,8 +5,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.List;
-
 import org.junit.After;
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,13 +15,14 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultMatcher;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.tollparkingapi.tollparking.config.TollParkingTestConfigurationIT;
 import com.tollparkingapi.tollparking.entity.EngineType;
 import com.tollparkingapi.tollparking.entity.TollParking;
 import com.tollparkingapi.tollparking.resource.BillResource;
 import com.tollparkingapi.tollparking.resource.CarResource;
 import com.tollparkingapi.tollparking.resource.ParkingSlotResource;
+import com.tollparkingapi.tollparking.resource.PricingPolicyResource;
+import com.tollparkingapi.tollparking.resource.TollParkingResource;
 
 /**
  * Integration test class for TollParkingController
@@ -58,10 +57,15 @@ public class TollParkingControllerTestIT extends TollParkingTestConfigurationIT 
     public void testInitTollParking() throws Exception {
         MvcResult result = testInitTollParking("initTollParkingForm.json", status().isOk());
 
-        List<ParkingSlotResource> parkingSlotResources = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<ParkingSlotResource>>() {
-        });
+        TollParkingResource tollParkingResource = mapper.readValue(result.getResponse().getContentAsByteArray(),
+                TollParkingResource.class);
 
-        assertThat(parkingSlotResources).isNotEmpty().hasSize(10);
+        assertThat(tollParkingResource).isNotNull();
+        assertThat(tollParkingResource.getParkingSlots()).isNotEmpty().hasSize(10);
+        PricingPolicyResource pricingPolicyResource = tollParkingResource.getPricingPolicy();
+        assertThat(pricingPolicyResource).isNotNull();
+        assertThat(pricingPolicyResource.getFixedFee()).isEqualTo(0.0);
+        assertThat(pricingPolicyResource.getPricePerHour()).isEqualTo(2.5);
     }
 
     @Test
