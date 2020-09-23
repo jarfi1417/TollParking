@@ -3,20 +3,46 @@ Toll Parking Java API
 
 ## Description
 
-The API is used to manage a toll parking.
+This API manage a toll parking for standard and electric cars.
+
+## Technical details
+
+* [Spring Boot]
+* [Maven]
+* [JUnit 4]
+* [Mapstruct]
+* [Lombok]
+* [Swagger]
+
+## Prerequisites:
+
+* JDK 8
+* Maven
 
 ### How to
 
-Build the code
+Clone the repository
+```
+git clone https://github.com/jarfi1417/TollParking.git
+```
+
+Compile and run the unit and integration tests
 ```
 mvn clean install
 ```
-Run application
+
+Run the application
 ```
 mvn spring-boot:run
 ```
 
 Swagger documentation can be found at: http://localhost:8888/tollparking/swagger-ui/
+
+## How to use the API
+
+In order to start using the toll parking services, you must launch the initTollParking service to initialize the parking.
+
+NB : everything is stored in memory.
 
 ## REST endpoints
 
