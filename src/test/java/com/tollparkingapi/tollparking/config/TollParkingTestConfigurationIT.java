@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultMatcher;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -42,27 +43,31 @@ public abstract class TollParkingTestConfigurationIT {
      * Allows to perform an init the toll parking request
      * @param jsonFile the input json file request
      * @param expectedStatus the expected status returned by the request
+     * @return the mvc result
      * @throws Exception if an error occured during the file reading
      */
-    protected void testInitTollParking(String jsonFile, ResultMatcher expectedStatus) throws Exception {
-        mvc.perform(post("/init")
+    protected MvcResult testInitTollParking(String jsonFile, ResultMatcher expectedStatus) throws Exception {
+        return mvc.perform(post("/init")
                 .content(readFileAsString("src/test/resources/jsonSet/" + jsonFile))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(expectedStatus);
+                .andExpect(expectedStatus)
+                .andReturn();
     }
 
     /**
      * Allows to perform a check in request
      * @param jsonFile the input json file request
      * @param expectedStatus the expected status returned by the request
+     * @return the mvc result
      * @throws Exception if an error occured during the file reading
      */
-    protected void testCheckIn(String jsonFile, ResultMatcher expectedStatus) throws Exception {
-        mvc.perform(put("/checkin")
+    protected MvcResult testCheckIn(String jsonFile, ResultMatcher expectedStatus) throws Exception {
+        return mvc.perform(put("/checkin")
                 .content(readFileAsString("src/test/resources/jsonSet/" + jsonFile))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(expectedStatus);
+                .andExpect(expectedStatus)
+                .andReturn();
     }
 }

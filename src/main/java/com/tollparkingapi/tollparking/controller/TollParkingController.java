@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.tollparkingapi.tollparking.entity.TollParking;
 import com.tollparkingapi.tollparking.exception.CarNotFoundException;
 import com.tollparkingapi.tollparking.exception.NoParkingSlotAvailableException;
 import com.tollparkingapi.tollparking.exception.ParkingSlotConfigurationException;
@@ -17,6 +18,10 @@ import com.tollparkingapi.tollparking.exception.WrongEngineTypeException;
 import com.tollparkingapi.tollparking.exception.WrongPricingPolicyException;
 import com.tollparkingapi.tollparking.form.CarForm;
 import com.tollparkingapi.tollparking.form.TollParkingForm;
+import com.tollparkingapi.tollparking.mapper.TollParkingMapper;
+import com.tollparkingapi.tollparking.resource.BillResource;
+import com.tollparkingapi.tollparking.resource.ParkingSlotResource;
+import com.tollparkingapi.tollparking.resource.TollParkingResource;
 import com.tollparkingapi.tollparking.service.TollParkingService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,9 +39,13 @@ public class TollParkingController {
     @Autowired
     private TollParkingService tollParkingService;
 
+    @Autowired
+    private TollParkingMapper mapper;
+
     /**
      * Init the Toll Parking with the given {@link TollParkingForm} data
      * @param tollParkingForm the data to init the toll parking
+     * @return the toll parking information
      */
     @Operation(summary = "Allows to init the toll parking")
     @ApiResponses(value = {
@@ -45,9 +54,13 @@ public class TollParkingController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @PostMapping("/init")
-    public void initTollParking(@RequestBody TollParkingForm tollParkingForm) {
+    public TollParkingResource initTollParking(@RequestBody TollParkingForm tollParkingForm) {
         try {
-            tollParkingService.initTollParking(tollParkingForm);
+            TollParking tollParking = tollParkingService.initTollParking(tollParkingForm);
+            TollParkingResource tollParkingResource = new TollParkingResource();
+            tollParkingResource.setParkingSlots(mapper.asParkingSlotResourceList(tollParking.getParkingSlots()));
+            tollParkingResource.setPricingPolicy(mapper.asPricingPolicyResource(tollParking.getPricingPolicy()));
+            return tollParkingResource;
         } catch (WrongPricingPolicyException wpe) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, wpe.getMessage(), wpe);
         } catch (ParkingSlotConfigurationException psce) {
@@ -60,6 +73,7 @@ public class TollParkingController {
     /**
      * Allows to check in the toll parking
      * @param carForm the car data
+     * @return the parking slot data where the given car is parked
      */
     @Operation(summary = "Allows to check in the toll parking")
     @ApiResponses(value = {
@@ -68,9 +82,9 @@ public class TollParkingController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @PutMapping("/checkin")
-    public void checkIn(@RequestBody CarForm carForm) {
+    public ParkingSlotResource checkIn(@RequestBody CarForm carForm) {
         try {
-            tollParkingService.enterParking(carForm);
+            return mapper.asParkingSlotResource(tollParkingService.enterParking(carForm));
         } catch (NoParkingSlotAvailableException npsae) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, npsae.getMessage(), npsae);
 
@@ -85,6 +99,7 @@ public class TollParkingController {
     /**
      * Allows to check out the toll parking
      * @param carId the car identifier
+     * @return the bill
      */
     @Operation(summary = "Allows to check out the toll parking")
     @ApiResponses(value = {
@@ -93,9 +108,9 @@ public class TollParkingController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @PutMapping("/checkout/{carId}")
-    public void checkOut(@PathVariable String carId) {
+    public BillResource checkOut(@PathVariable String carId) {
         try {
-            tollParkingService.leaveParking(carId);
+            return mapper.asBillResource(tollParkingService.leaveParking(carId));
         } catch (CarNotFoundException cnfe) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, cnfe.getMessage(), cnfe);
         } catch (Exception e) {

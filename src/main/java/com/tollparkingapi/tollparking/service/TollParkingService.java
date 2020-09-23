@@ -2,6 +2,7 @@ package com.tollparkingapi.tollparking.service;
 
 import com.tollparkingapi.tollparking.entity.Bill;
 import com.tollparkingapi.tollparking.entity.ParkingSlot;
+import com.tollparkingapi.tollparking.entity.TollParking;
 import com.tollparkingapi.tollparking.exception.CarNotFoundException;
 import com.tollparkingapi.tollparking.exception.NoParkingSlotAvailableException;
 import com.tollparkingapi.tollparking.exception.ParkingSlotConfigurationException;
@@ -19,11 +20,12 @@ public interface TollParkingService {
     /**
      * Allows to init the tool parking with the given {@link TollParkingForm}
      * @param parkingCreationForm the {@link TollParkingForm} data
+     * @return the toll parking data
      * @throws WrongPricingPolicyException if the pricing policy is wrong
      * @throws ParkingSlotConfigurationException if there is a parking slot
      * configuration error
      */
-    public void initTollParking(TollParkingForm parkingCreationForm) throws WrongPricingPolicyException, ParkingSlotConfigurationException;
+    public TollParking initTollParking(TollParkingForm parkingCreationForm) throws WrongPricingPolicyException, ParkingSlotConfigurationException;
 
     /**
      * Allows to get the toll parking total size

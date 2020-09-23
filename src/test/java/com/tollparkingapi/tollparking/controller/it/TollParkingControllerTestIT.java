@@ -5,6 +5,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,8 +17,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultMatcher;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.tollparkingapi.tollparking.config.TollParkingTestConfigurationIT;
+import com.tollparkingapi.tollparking.entity.EngineType;
 import com.tollparkingapi.tollparking.entity.TollParking;
+import com.tollparkingapi.tollparking.resource.BillResource;
+import com.tollparkingapi.tollparking.resource.CarResource;
+import com.tollparkingapi.tollparking.resource.ParkingSlotResource;
 
 /**
  * Integration test class for TollParkingController
@@ -36,18 +43,25 @@ public class TollParkingControllerTestIT extends TollParkingTestConfigurationIT 
      * Allows to perform a check out request
      * @param carId the car identifier
      * @param expectedStatus the expected status returned by the request
+     * @return the mock mvc result
      * @throws Exception
      */
-    private void testCheckOut(String carId, ResultMatcher expectedStatus) throws Exception {
-        mvc.perform(put("/checkout/{carId}", carId)
+    private MvcResult testCheckOut(String carId, ResultMatcher expectedStatus) throws Exception {
+        return mvc.perform(put("/checkout/{carId}", carId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(expectedStatus);
+                .andExpect(expectedStatus)
+                .andReturn();
     }
 
     @Test
     public void testInitTollParking() throws Exception {
-        testInitTollParking("initTollParkingForm.json", status().isOk());
+        MvcResult result = testInitTollParking("initTollParkingForm.json", status().isOk());
+
+        List<ParkingSlotResource> parkingSlotResources = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<ParkingSlotResource>>() {
+        });
+
+        assertThat(parkingSlotResources).isNotEmpty().hasSize(10);
     }
 
     @Test
@@ -63,7 +77,16 @@ public class TollParkingControllerTestIT extends TollParkingTestConfigurationIT 
     @Test
     public void testCheckIn() throws Exception {
         testInitTollParking("initTollParkingForm.json", status().isOk());
-        testCheckIn("checkInCarForm.json", status().isOk());
+        MvcResult result = testCheckIn("checkInCarForm.json", status().isOk());
+
+        ParkingSlotResource parkingSlotResource = mapper.readValue(result.getResponse().getContentAsByteArray(),
+                ParkingSlotResource.class);
+        assertThat(parkingSlotResource).isNotNull();
+        assertThat(parkingSlotResource.isFree()).isFalse();
+        CarResource carResource = parkingSlotResource.getParkedCar();
+        assertThat(carResource).isNotNull();
+        assertThat(carResource.getId()).isEqualTo("AA-123-BB");
+        assertThat(carResource.getCarType()).isEqualTo(EngineType.STANDARD);
     }
 
     @Test
@@ -75,7 +98,14 @@ public class TollParkingControllerTestIT extends TollParkingTestConfigurationIT 
     public void testCheckOut() throws Exception {
         testInitTollParking("initTollParkingForm.json", status().isOk());
         testCheckIn("checkInCarForm.json", status().isOk());
-        testCheckOut("AA-123-BB", status().isOk());
+        MvcResult result = testCheckOut("AA-123-BB", status().isOk());
+        BillResource billResource = mapper.readValue(result.getResponse().getContentAsByteArray(),
+                BillResource.class);
+        assertThat(billResource).isNotNull();
+
+        // Price to pay is equals to 0.0 because of the very short period of
+        // park
+        assertThat(billResource.getTotalPriceToPay()).isEqualTo(0.0);
     }
 
     @Test

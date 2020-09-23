@@ -98,7 +98,7 @@ public class TollParkingServiceImpl implements TollParkingService {
     }
 
     @Override
-    public void initTollParking(TollParkingForm parkingCreationForm) throws WrongPricingPolicyException, ParkingSlotConfigurationException {
+    public TollParking initTollParking(TollParkingForm parkingCreationForm) throws WrongPricingPolicyException, ParkingSlotConfigurationException {
         initTollParkingSlots(
                 parkingCreationForm.getNbStandardParkingSlots(),
                 parkingCreationForm.getNb20KWElectricParkingSlots(),
@@ -106,6 +106,8 @@ public class TollParkingServiceImpl implements TollParkingService {
         setPricingPolicy(parkingCreationForm.getPricePerHour(),
                 parkingCreationForm.getFixedFee(),
                 parkingCreationForm.getPricingPolicyType());
+
+        return TollParking.getInstance();
     }
 
     @Override

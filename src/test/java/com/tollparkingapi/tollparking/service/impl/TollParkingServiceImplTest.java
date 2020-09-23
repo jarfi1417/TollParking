@@ -61,9 +61,9 @@ public class TollParkingServiceImplTest extends TollParkingTestConfiguration {
             int nb50KWElectricParkingSlots,
             String pricingPolicyType) throws Exception {
         TollParkingForm tollParkingForm = createTollParkingForm(
-                nbStandardParkingSlots, nb20KWElectricParkingSlots, nb50KWElectricParkingSlots, pricingPolicyType);
-        tollParkingService.initTollParking(tollParkingForm);
-        TollParking tollParking = TollParking.getInstance();
+                nbStandardParkingSlots, nb20KWElectricParkingSlots, nb50KWElectricParkingSlots, pricingPolicyType, 2.5, 10.0);
+
+        TollParking tollParking = tollParkingService.initTollParking(tollParkingForm);
         assertThat(tollParking).isNotNull();
         return tollParking;
     }
@@ -114,25 +114,25 @@ public class TollParkingServiceImplTest extends TollParkingTestConfiguration {
 
     @Test(expected = WrongPricingPolicyException.class)
     public void testInitTollParkingWrongPricingPolicy() throws Exception {
-        TollParkingForm tollParkingForm = createTollParkingForm(5, 2, 3, "WRONG_PRICING_POLICY");
+        TollParkingForm tollParkingForm = createTollParkingForm(5, 2, 3, "WRONG_PRICING_POLICY", 2.5, 10.0);
         tollParkingService.initTollParking(tollParkingForm);
     }
 
     @Test(expected = WrongPricingPolicyException.class)
     public void testInitTollParkingNullPricingPolicy() throws Exception {
-        TollParkingForm tollParkingForm = createTollParkingForm(5, 2, 3, null);
+        TollParkingForm tollParkingForm = createTollParkingForm(5, 2, 3, null, 2.5, 10.0);
         tollParkingService.initTollParking(tollParkingForm);
     }
 
     @Test(expected = ParkingSlotConfigurationException.class)
     public void testInitTollParkingBadConfiguration() throws Exception {
-        TollParkingForm tollParkingForm = createTollParkingForm(0, 0, 0, "PER_HOUR");
+        TollParkingForm tollParkingForm = createTollParkingForm(0, 0, 0, "PER_HOUR", 2.5, 0.0);
         tollParkingService.initTollParking(tollParkingForm);
     }
 
     @Test(expected = ParkingSlotConfigurationException.class)
     public void testInitTollParkingWrongConfiguration() throws Exception {
-        TollParkingForm tollParkingForm = createTollParkingForm(-1, 2, 3, "PER_HOUR");
+        TollParkingForm tollParkingForm = createTollParkingForm(-1, 2, 3, "PER_HOUR", 2.5, 0.0);
         tollParkingService.initTollParking(tollParkingForm);
     }
 

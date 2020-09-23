@@ -21,6 +21,8 @@ import org.springframework.test.web.servlet.ResultMatcher;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tollparkingapi.tollparking.config.TollParkingTestConfiguration;
+import com.tollparkingapi.tollparking.entity.TollParking;
+import com.tollparkingapi.tollparking.entity.pricingpolicy.PricingPolicyPerHourBuilder;
 import com.tollparkingapi.tollparking.exception.CarNotFoundException;
 import com.tollparkingapi.tollparking.exception.NoParkingSlotAvailableException;
 import com.tollparkingapi.tollparking.exception.ParkingSlotConfigurationException;
@@ -60,11 +62,6 @@ public class TollParkingControllerTest extends TollParkingTestConfiguration {
 
     @MockBean
     private ParkingSlotService parkingSlotService;
-
-    /*
-     * public static String readFileAsString(String file) throws Exception {
-     * return new String(Files.readAllBytes(Paths.get(file))); }
-     */
 
     /**
      * Allows to perform an init the toll parking request
@@ -106,6 +103,14 @@ public class TollParkingControllerTest extends TollParkingTestConfiguration {
 
     @Test
     public void testInitTollParking() throws Exception {
+        TollParking tollParking = new TollParking();
+
+        PricingPolicyPerHourBuilder pricingPolicyPerHourBuilder = new PricingPolicyPerHourBuilder();
+        pricingPolicyPerHourBuilder.setFixedFee(10.0);
+        pricingPolicyPerHourBuilder.setPricePerHour(2.5);
+        tollParking.setPricingPolicyBuilder(pricingPolicyPerHourBuilder);
+
+        Mockito.when(tollParkingService.initTollParking(Mockito.any(TollParkingForm.class))).thenReturn(tollParking);
         testInitTollParking(status().isOk());
     }
 

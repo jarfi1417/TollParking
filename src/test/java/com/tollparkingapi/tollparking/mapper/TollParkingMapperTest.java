@@ -13,9 +13,11 @@ import com.tollparkingapi.tollparking.config.TollParkingTestConfiguration;
 import com.tollparkingapi.tollparking.entity.Car;
 import com.tollparkingapi.tollparking.entity.EngineType;
 import com.tollparkingapi.tollparking.entity.ParkingSlot;
+import com.tollparkingapi.tollparking.entity.pricingpolicy.PricingPolicy;
 import com.tollparkingapi.tollparking.form.CarForm;
 import com.tollparkingapi.tollparking.resource.CarResource;
 import com.tollparkingapi.tollparking.resource.ParkingSlotResource;
+import com.tollparkingapi.tollparking.resource.PricingPolicyResource;
 
 /**
  * Class to test the toll parking mapper
@@ -32,6 +34,22 @@ public class TollParkingMapperTest extends TollParkingTestConfiguration {
             TollParkingMapperTest.class, TollParkingMapper.class })
     public static class SpringTestConfig {
 
+    }
+
+    @Test
+    public void testAsPricingPolicy() throws Exception {
+        // given
+        PricingPolicy pricingPolicy = new PricingPolicy();
+        pricingPolicy.setFixedFee(1.0);
+        pricingPolicy.setPricePerHour(2.0);
+
+        // when
+        PricingPolicyResource pricingPolicyResource = tollParkingMapper.asPricingPolicyResource(pricingPolicy);
+
+        // then
+        assertThat(pricingPolicyResource).isNotNull();
+        assertThat(pricingPolicyResource.getFixedFee()).isEqualTo(1.0);
+        assertThat(pricingPolicyResource.getPricePerHour()).isEqualTo(2.0);
     }
 
     @Test
