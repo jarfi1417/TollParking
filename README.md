@@ -3,16 +3,16 @@ Toll Parking Java API
 
 ## Description
 
-This API manage a toll parking for standard and electric cars.
+This API manage a toll parking for standard and electric cars. Cars can checkin and checkout. Customers are billed when leaving automatically.
 
 ## Technical details
 
-* [Spring Boot]
-* [Maven]
-* [JUnit 4]
-* [Mapstruct]
-* [Lombok]
-* [Swagger]
+* Spring Boot
+* Maven
+* JUnit 4
+* Mapstruct
+* Lombok
+* Swagger
 
 ## Prerequisites:
 
@@ -40,7 +40,7 @@ Swagger documentation can be found at: http://localhost:8888/tollparking/swagger
 
 ## How to use the API
 
-In order to start using the toll parking services, you must launch the initTollParking service to initialize the parking.
+In order to start using the toll parking services, you must launch the initTollParking service first to initialize the parking.
 
 NB : everything is stored in memory.
 
@@ -48,20 +48,20 @@ NB : everything is stored in memory.
 
 ### TollParking
 
-initTollParking: init toll parking with toll parking data ie. the number of parking slots for each engine types (STANDARD - ELECTRIC_20KW - ELECTRIC_50KW), a pricing policy type (for now PER_HOUR or PER_HOUR_WITH_FIXED_FEE) and a the price information.
+* initTollParking: init toll parking with toll parking data ie. the number of parking slots for each engine types (STANDARD - ELECTRIC_20KW - ELECTRIC_50KW), a pricing policy type (for now PER_HOUR or PER_HOUR_WITH_FIXED_FEE) and a the price information.
 
-checkIn: A car wants to enter the parking. 
+* checkIn: A car wants to enter the parking. 
 
-checkOut: A car wants to leave the parking.
+* checkOut: A car wants to leave the parking.
 
-getTollParkingSize: the toll parking parking slots total size
+* getTollParkingSize: the toll parking parking slots total size
 
 ### ParkingSlot
 
-getAllAvailableParkingSlots: All the toll parking parking slots still available
+* getAllAvailableParkingSlots: All the toll parking parking slots still available
 
-getAllAvailableParkingSlotsFromEngineType: All the toll parking parking slots still available for a given engine type
+* getAllAvailableParkingSlotsFromEngineType: All the toll parking parking slots still available for a given engine type
 
-getParkingSlotFromParkedCar: the parking slot where the given car is parked
+* getParkingSlotFromParkedCar: the parking slot where the given car is parked
 
-resetParkingSlot: reset the given parking slot to initial state
+* resetParkingSlot: reset the given parking slot to initial state
